@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+	
+	<title>openStream</title>
+	<script src="http://cdn.jsdelivr.net/g/jquery@1.11.0"></script>
+	<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+	<style>
+		
+		body, html {
+			
+			background: #000;
+			color: #FFFFF5;
+			font-family: helvetica;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			width: 100%;
+			
+		}
+		
+	</style>
+	
+	</head>
+	
+	<body>
+		<input type="file" id="files" name="files[]" multiple />
+		<output id="list"></output>
+
+		<script>
+
+		//list of peers ip
+
+		//open page
+		//get peer ips
+		//collect fileInventory from each peer
+		//check for missing inventories
+		//get missing inventories
+
+
+		//search file inventory for content e.g. game of thrones
+		//find file
+		//download chunk from different peers into memory
+		//stream with video tag
+
+		//click upload
+		//find file to upload
+		//upload file into memory
+		//add file and meta to inventory
+		//broadcast inventory update
+
+		var peer = new Peer('someid1', {host: '192.168.178.43', port: 9000, path: '/myapp'});
+
+		/*
+		var conn = peer.connect('someid');
+		
+		conn.on('open', function(){
+		  conn.send('hi simon!');
+		});
+		*/
+
+
+		var videoData = "";
+		  function handleFileSelect(evt) {
+		    var files = evt.target.files; // FileList object
+
+		    // Loop through the FileList and render image files as thumbnails.
+		    for (var i = 0, f; f = files[i]; i++) {
+
+		      function updateProgress(evt) {
+			    // evt is an ProgressEvent.
+			    if (evt.lengthComputable) {
+			      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+			      // Increase the progress bar length.
+			      if (percentLoaded < 100) {
+			        console.log(percentLoaded + '%');
+			      }
+			    }
+			  }
+
+		      var reader = new FileReader();
+		      reader.onprogress = updateProgress;
+
+		      // Closure to capture the file information.
+		      reader.onload = (function(theFile) {
+		        return function(e) {
+		          // Render thumbnail.
+		          var span = document.createElement('span');
+		          /*
+		          span.innerHTML = ['<video controls src="', "data:video/webm;base64,", btoa(e.target.result),
+		                            '" title="', escape(theFile.name), '"/>'].join('');
+		          */
+		          console.log("videoLoaded");
+		          
+		          var conn = peer.connect('someid');
+		        	conn.on('open', function(){
+		          		console.log("sending file");
+		          		//conn.send("test");
+		  				conn.send(e.target.result);
+					});              
+		          videoData = e.target.result;
+		          //document.getElementById('list').insertBefore(span, null);
+		        };
+		      })(f);
+
+		      // Read in the image file as a data URL.
+		      console.log(reader);
+		      reader.readAsBinaryString(f);
+		    }
+		  }
+
+		  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+		</script>
+	</body>
+</html>

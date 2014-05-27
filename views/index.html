@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+    
+    <title>streamTime.to</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="http://cdn.jsdelivr.net/g/jquery@1.11.0"></script>
+    <script src="http://fb.me/react-0.10.0.js"></script>
+    <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+    <script data-main="js/app" src="js/require.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Rubik+Mono+One' rel='stylesheet' type='text/css'>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <style>
+        
+        body, html {
+            
+            background: #fff;
+            font-family: helvetica;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            
+        }
+
+        h1 {
+            font-family: 'Rubik Mono One', sans-serif;
+            font-size: 30px;
+            padding-top: 10px;
+        }
+
+        .mainSearch {
+            text-align : right;
+        }
+
+        .mainInput {
+
+            display: inline-block;
+            font-size: 22px;
+            padding: 10px;
+            width: 75%;
+            background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));  
+            background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);  
+            box-shadow: rgba(0,0,0,1) 0px 0px 8px;  
+            -moz-box-shadow: rgba(0,0,0,1) 0px 0px 8px;  
+            -webkit-box-shadow: rgba(0,0,0,1) 0px 0px 8px;
+            margin-top: 20px;
+
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .availableShow {
+
+            border: 1px solid #000;
+            height: 200px;
+
+        }
+
+        .info {
+            background : rgba(0, 0 ,0, 0.5);
+            padding: 10px;
+            margin: 40px 0;
+        }
+
+        .streamPlayer {
+            background: #000;
+            width: 100%;
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+    </style>
+    
+    </head>
+    
+    <body>
+        <div class="container streamApp">
+        </div>
+
+        <script>
+
+        //list of peers ip
+
+        //open page
+        //get peer ips
+        //collect fileInventory from each peer
+        //check for missing inventories
+        //get missing inventories
+
+
+        //search file inventory for content e.g. game of thrones
+        //find file
+        //download chunk from different peers into memory
+        //stream with video tag
+
+        //click upload
+        //find file to upload
+        //upload file into memory
+        //add file and meta to inventory
+        //broadcast inventory update
+
+        var myID = '{{streamID}}';
+
+
+
+        var videoData = "";
+          function handleFileSelect(evt) {
+            var files = evt.target.files; // FileList object
+
+            // Loop through the FileList and render image files as thumbnails.
+            for (var i = 0, f; f = files[i]; i++) {
+
+              function updateProgress(evt) {
+                // evt is an ProgressEvent.
+                if (evt.lengthComputable) {
+                  var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+                  // Increase the progress bar length.
+                  if (percentLoaded < 100) {
+                    console.log(percentLoaded + '%');
+                  }
+                }
+              }
+
+              var reader = new FileReader();
+              reader.onprogress = updateProgress;
+
+              // Closure to capture the file information.
+              reader.onload = (function(theFile) {
+                return function(e) {
+                  // Render thumbnail.
+                  var span = document.createElement('span');
+                  
+                  span.innerHTML = ['<video controls src="', "data:video/webm;base64,", btoa(e.target.result),
+                                    '" title="', escape(theFile.name), '"/>'].join('');
+                                
+                  videoData = e.target.result;
+                  console.log("videoLoaded");
+                  document.getElementById('list').insertBefore(span, null);
+                };
+              })(f);
+
+              // Read in the image file as a data URL.
+              console.log(reader);
+              reader.readAsBinaryString(f);
+            }
+          }
+
+          //document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+        </script>
+        <!--script src="/js/streamManager.js"></script>
+        <script src="/js/streamUploader.js"></script>
+        <script src="/js/streamGrid.js"></script -->
+    </body>
+</html>
