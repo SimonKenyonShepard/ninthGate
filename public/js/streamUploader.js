@@ -1,4 +1,4 @@
-define([], function() {
+define(["md5baseJS"], function(md5) {
 
     var fileHandle = "";
 
@@ -18,20 +18,57 @@ define([], function() {
         __loadFileToMemory : function() {
             var reader = new FileReader();
             var button = this;
-            reader.onload = (function(theFile) {
-                return function(e) {
-                    button.setState({style : "btn-success"});
-                    button.setState({buttonText : "Complete."});
-                    button.__uploadComplete(e.target.result);
-                };
-            })(fileHandle);
-
+            var hashes = [];
+            var pieceSizeInB = 499998;
+            var numberOfPieces = Math.ceil(fileHandle.size/pieceSizeInB);
+            var i = 0;
+            
+            reader.onload = function(e) {
+                    i = i+1;
+                    var pieces = {};
+                    var data = e.target.result.substring(13);                         
+                        var hashedID = md5(data);
+                        hashes.push(hashedID);
+                        button.__cachePiece(hashedID, data);
+                    if(i === numberOfPieces) {
+                        button.__uploadComplete(pieces, hashes);
+                        button.setState({style : "btn-success"});
+                        button.setState({buttonText : "completed"});
+                    } else {
+                        button.__loadNextPiece(i, pieceSizeInB, reader, fileHandle);
+                    }
+                
+            };
+            button.__loadNextPiece(i, pieceSizeInB, reader, fileHandle);
+            /*
+            reader.onload = function(e) {
+                console.log(e.target.result, e.target.result.length);
+                console.log(e.target.result.substring(e.target.result.length-20));
+            }
             reader.readAsDataURL(fileHandle);
+            */
+            return false;
             
         },
 
-        __uploadComplete : function(data) {
-            this.props.uploader.cacheStreamFile(data, $("#series").val(), $("#episode").val());
+        __loadNextPiece : function(pieceNumber, pieceSizeInB, reader, fileHandle) {
+            var start = pieceNumber*pieceSizeInB;
+            var stop = pieceNumber*pieceSizeInB+pieceSizeInB;
+            if(stop > fileHandle.size) {
+                stop = fileHandle.size;
+            }
+            console.log("cut piece from", start, stop, "size", fileHandle.size);
+            var blob = fileHandle.slice(start, stop);
+            //reader.readAsBinaryString(blob);
+            reader.readAsDataURL(blob);
+        },
+
+        __cachePiece : function(piece, hash) {
+            this.props.uploader.cachePiece(hash, piece);
+        },
+
+        __uploadComplete : function(pieces, hashes) {
+            this.props.uploader.cacheStreamFile(hashes, $("#series").val(), $("#episode").val());
         },
 
         render: function() {
@@ -104,6 +141,7 @@ define([], function() {
             return (
                 React.DOM.form({
                     role : "form",
+                    onSubmit : function() {return false;},
                     children : [seriesName, episode, fileLocation, uploadButtonControl, clearFix]
                 })
             );

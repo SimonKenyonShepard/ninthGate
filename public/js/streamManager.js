@@ -19,10 +19,15 @@ define(["md5baseJS"], function(md5) {
                 remoteCatalogue[streamer] = JSON.parse(data.payload);
             },
             requestStreamPiece : function(streamer, data) {
-                makeRequest(streamer, {type : "3", videoID : data.videoID, payload : streamData[data.videoID]});
+                var pieces = {};
+                for(var i = 0; i < data.pieces.length; i++) {
+                    pieces[data.pieces[i]] = streamData[data.pieces[i]];
+                }
+                makeRequest(streamer, {type : "3", pieces : pieces});
+
             },
             cacheStreamPiece : function(streamer, data) {
-                streamData[data.videoID] = data.payload;
+                cachePieces(data.pieces);
             }
         };
 
@@ -96,7 +101,7 @@ define(["md5baseJS"], function(md5) {
         }
     };
 
-    var cacheStreamFile = function(file, series, seasonAndEpisode) {
+    var cacheStreamFile = function(hashes, series, seasonAndEpisode) {
 
         var id = md5(series.trim()+seasonAndEpisode.split(":")[0].trim()+seasonAndEpisode.split(":")[1].trim());
         myCatalogue.push({
@@ -104,26 +109,56 @@ define(["md5baseJS"], function(md5) {
             "season" : seasonAndEpisode.split(":")[0].trim(),
             "episode" : seasonAndEpisode.split(":")[1].trim(),
             "lang" : "en",
+            "pieces" : hashes,
             "id" : id                
         });
-        streamData[id] = file;
+        console.log(myCatalogue);
+        console.log(streamData);
 
+    };
+
+    var cachePieces = function(pieces) {
+        for(var piece in pieces) {
+            if(md5(pieces[piece]) === piece) {
+                cachePiece(piece, pieces[piece]);
+                console.log("cached valid piece");    
+            } else {
+                console.log("invalid piece received");
+            }
+            
+        }
+        console.log(streamData);
+    };
+
+    var cachePiece = function(hash, piece) {
+        streamData[hash] = piece;
     };
 
     var getVideo = function(item) {
 
         var catalogueEntry = searchCatalogueForItem(item);
         if(catalogueEntry) {
-            makeRequest(catalogueEntry.streamer, {type : "2", videoID : catalogueEntry.data.id});
-            return catalogueEntry.data.id;
+            makeRequest(catalogueEntry.streamer, {type : "2", pieces : catalogueEntry.data.pieces});
+            return catalogueEntry.data.pieces;
         } else {
             return "failed no streamer found with that in their catalogue";
         }
 
     };
 
-    var getVideoData = function(id) {
-        return streamData[id];
+    var getVideoData = function(pieces) {
+
+        var allPieces = ["data:video/webm;base64,"];
+        for(var i = 0; i < pieces.length; i++) {
+            if(streamData[pieces[i]]) {
+                allPieces.push(streamData[pieces[i]]);
+            }
+        }
+        if(allPieces.length === pieces.length+1) {
+            return allPieces;
+        } else {
+            return false;
+        }
     };
 
     var init = function() {
@@ -138,6 +173,7 @@ define(["md5baseJS"], function(md5) {
     return {
         getStoredCatalogues : getStoredCatalogues,
         cacheStreamFile : cacheStreamFile,
+        cachePiece : cachePiece,
         getVideo : getVideo,
         getVideoData : getVideoData
     }

@@ -1,27 +1,34 @@
 require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "streamStage"], function(streamer, StreamHeader, InfoBox, StreamGrid, StreamStage) {
 
     var StreamApp = React.createClass({
-        getInitialState : function() {
-            return {
-                catalogue : [],
+
+        _initialState : {
+            catalogue : [],
                 uploader : {
-                    cacheStreamFile : streamer.cacheStreamFile    
+                    cacheStreamFile : streamer.cacheStreamFile,
+                    cachePiece : streamer.cachePiece
                 },
                 stage : {
                     visible : "hidden",
-                    videoID : null,
-                    videoData : null
+                    videoID : "",
+                    videoData : ""
                 }
-                 
-            };
+        },
+
+        getInitialState : function() {
+            return this._initialState;
         },
 
         tick: function() {
-            this.setState({catalogue: streamer.getStoredCatalogues()});
-            if(this.state.stage.videoID !== null && this.state.stage.videoData !== null) {
+            var newCatalogue = streamer.getStoredCatalogues();
+            if(this.state.catalogue.length !== newCatalogue.length) {
+                this.setState({catalogue: streamer.getStoredCatalogues()});
+            }
+            if(this.state.stage.videoID !== "" && this.state.stage.videoData === "") {
                 var videoData = streamer.getVideoData(this.state.stage.videoID);
                 if(videoData) {
-                    this.setState({stage : {videoData : videoData}});
+                    this._initialState.stage.videoData = videoData;
+                    this.setState({stage : this._initialState.stage});
                 }
             }
         },
@@ -35,7 +42,6 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
         },
 
         selectStream : function(event) {
-            console.log("click event fired");
             var show = event.target.innerHTML.split(":");
             var item = {
                 "name" : show[0].trim(),
@@ -43,7 +49,11 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
                 "episode" : show[2].trim()
             };
             var id = streamer.getVideo(item);
-            this.setState({stage : {visible : "show", videoID : id}});
+            this._initialState.stage.visible = "show";
+            this._initialState.stage.videoID = id;
+            this.setState({stage : this._initialState.stage});
+
+
         },
 
         render: function() {
@@ -55,7 +65,7 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
                                                     React.DOM.div({
                                                                     className : "col-md-9",
                                                                     children : [
-                                                                        StreamStage(this.state),
+                                                                        StreamStage(this.state.stage),
                                                                         StreamGrid({catalogue : this.state.catalogue, clickEvent : this.selectStream})
                                                                     ]
                                                     })
