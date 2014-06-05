@@ -8,9 +8,7 @@ var app = express(),
 app.use(express.static(process.cwd() + '/public'));
 
 app.on("render:index", function(encoding, req, res) {
-	var userID = md5(req.connection.remoteAddress);
 	fs.readFile(__dirname+"/views/index.html", encoding, function(err, html) {
-		html = html.replace(/{{streamID}}/g, userID);
 		res.contentType("text/html");
 		res.send(200, html);
 	});	

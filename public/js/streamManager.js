@@ -33,7 +33,7 @@ define(["md5baseJS"], function(md5) {
 
     var connectToSignallingHost = function() {
 
-        var peer = new Peer(myID, {host: '192.168.178.43', port: 9000, path: '/myapp'});
+        var peer = new Peer("", {host: '192.168.178.43', port: 9000, path: '/myapp'});
         
         peer.on('connection', function(conn) {
             conn.on('data', function(data){
@@ -113,7 +113,6 @@ define(["md5baseJS"], function(md5) {
             "id" : id                
         });
         console.log(myCatalogue);
-        console.log(streamData);
 
     };
 
@@ -127,7 +126,6 @@ define(["md5baseJS"], function(md5) {
             }
             
         }
-        console.log(streamData);
     };
 
     var cachePiece = function(hash, piece) {

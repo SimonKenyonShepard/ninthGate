@@ -63,7 +63,7 @@ define(["md5baseJS"], function(md5) {
             reader.readAsDataURL(blob);
         },
 
-        __cachePiece : function(piece, hash) {
+        __cachePiece : function(hash, piece) {
             this.props.uploader.cachePiece(hash, piece);
         },
 
