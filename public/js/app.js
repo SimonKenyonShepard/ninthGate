@@ -5,8 +5,7 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
         _initialState : {
             catalogue : [],
                 uploader : {
-                    cacheStreamFile : streamer.cacheStreamFile,
-                    cachePiece : streamer.cachePiece
+                    loadLocalFile : streamer.loadLocalFile
                 },
                 stage : {
                     visible : "hidden",

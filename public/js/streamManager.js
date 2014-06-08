@@ -5,6 +5,7 @@ define(["md5baseJS"], function(md5) {
         myCatalogue = [],
         remoteCatalogue = {},
         streamData = {},
+        localData = {},
         actions = [
             {type : "getCatalogue", response : "sendCatalogue" },
             {type : "recieveCatalogue", response : "storeCatalogue"},
@@ -101,7 +102,7 @@ define(["md5baseJS"], function(md5) {
         }
     };
 
-    var cacheStreamFile = function(hashes, series, seasonAndEpisode) {
+    var cacheStreamFile = function(hashes, series, seasonAndEpisode, fileHandle) {
 
         var id = md5(series.trim()+seasonAndEpisode.split(":")[0].trim()+seasonAndEpisode.split(":")[1].trim());
         myCatalogue.push({
@@ -110,9 +111,11 @@ define(["md5baseJS"], function(md5) {
             "episode" : seasonAndEpisode.split(":")[1].trim(),
             "lang" : "en",
             "pieces" : hashes,
-            "id" : id                
+            "id" : id,
+            "fileHandle" : fileHandle                
         });
         console.log(myCatalogue);
+        console.log(localData);
 
     };
 
@@ -128,8 +131,12 @@ define(["md5baseJS"], function(md5) {
         }
     };
 
-    var cachePiece = function(hash, piece) {
+    var cachePiece = function(hash, piece, range) {
         streamData[hash] = piece;
+        if(range) {
+            localData[hash] = range;    
+        }
+        
     };
 
     var getVideo = function(item) {
@@ -159,6 +166,55 @@ define(["md5baseJS"], function(md5) {
         }
     };
 
+    var loadLocalFile = function(fileHandle, callBack) {
+        var reader = new FileReader();
+        var button = this;
+        var hashes = [];
+        var pieceSizeInB = 499998;
+        var numberOfPieces = Math.ceil(fileHandle.size/pieceSizeInB);
+        var range;
+        var i = 0;
+        
+        reader.onload = function(e) {
+                i = i+1;
+                var pieces = {};
+                console.log(e.target);
+                var data = e.target.result.substring(13);                         
+                    var hashedID = md5(data);
+                    hashes.push(hashedID);
+                    cachePiece(hashedID, data, range);
+                if(i === numberOfPieces) {
+                    cacheStreamFile(hashes, $("#series").val(), $("#episode").val(), fileHandle);
+                    callBack("success");
+                } else {
+                    loadNextPiece(i, pieceSizeInB, reader, fileHandle);
+                }
+            
+        };
+        range = loadNextPiece(i, pieceSizeInB, reader, fileHandle);
+        /*
+        reader.onload = function(e) {
+            console.log(e.target.result, e.target.result.length);
+            console.log(e.target.result.substring(e.target.result.length-20));
+        }
+        reader.readAsDataURL(fileHandle);
+        */
+    };
+
+    var loadNextPiece = function(pieceNumber, pieceSizeInB, reader, fileHandle) {
+        var start = pieceNumber*pieceSizeInB;
+        var stop = pieceNumber*pieceSizeInB+pieceSizeInB;
+        if(stop > fileHandle.size) {
+            stop = fileHandle.size;
+        }
+        console.log("cut piece from", start, stop, "size", fileHandle.size);
+        var blob = fileHandle.slice(start, stop);
+        //reader.readAsBinaryString(blob);
+        reader.readAsDataURL(blob);
+        return { start : start, stop : stop};
+    };
+
+
     var init = function() {
 
         peer = connectToSignallingHost();
@@ -173,7 +229,8 @@ define(["md5baseJS"], function(md5) {
         cacheStreamFile : cacheStreamFile,
         cachePiece : cachePiece,
         getVideo : getVideo,
-        getVideoData : getVideoData
+        getVideoData : getVideoData,
+        loadLocalFile : loadLocalFile,
     }
 });
 
