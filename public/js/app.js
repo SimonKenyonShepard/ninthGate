@@ -1,5 +1,10 @@
 require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "streamStage"], function(streamer, StreamHeader, InfoBox, StreamGrid, StreamStage) {
 
+    window.MediaSource = window.MediaSource || window.WebKitMediaSource;
+    if (!!!window.MediaSource) {
+      alert('MediaSource API is not available');
+    }
+
     var StreamApp = React.createClass({
 
         _initialState : {
@@ -9,8 +14,9 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
                 },
                 stage : {
                     visible : "hidden",
-                    videoID : "",
-                    videoData : ""
+                    sourceBuffer : "",
+                    videoData : new MediaSource(),
+                    action : ""
                 }
         },
 
@@ -23,11 +29,13 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
             if(this.state.catalogue.length !== newCatalogue.length) {
                 this.setState({catalogue: streamer.getStoredCatalogues()});
             }
-            if(this.state.stage.videoID !== "" && this.state.stage.videoData === "") {
-                var videoData = streamer.getVideoData(this.state.stage.videoID);
-                if(videoData) {
-                    this._initialState.stage.videoData = videoData;
+            if(this.state.stage.action === "downloading") {
+                var videoData = streamer.getVideoData();
+                if(videoData === true) {
+                    this._initialState.stage.videoAction = "loaded";
                     this.setState({stage : this._initialState.stage});
+                } else if (videoData !== false) {
+                    sourceBuffer.appendBuffer(new Uint8Array(videoData));
                 }
             }
         },
@@ -47,9 +55,10 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
                 "season" : show[1].trim(),
                 "episode" : show[2].trim()
             };
-            var id = streamer.getVideo(item);
+            streamer.getVideo(item);
             this._initialState.stage.visible = "show";
-            this._initialState.stage.videoID = id;
+            this._initialState.stage.videoAction = "downloading";
+            this._initialState.stage.sourceBuffer = this._initialState.stage.videoData.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
             this.setState({stage : this._initialState.stage});
 
 

@@ -2,11 +2,12 @@ define([], function() {
 
     var videoPlayer = React.createClass({
         render: function() {
+            var ms = new MediaSource();
             return (
                 React.DOM.video({
                     className: 'streamPlayer',
                     controls : "true",
-                    src : this.props.videoData ? this.props.videoData.join("") : ""
+                    src : window.URL.createObjectURL(this.props.videoData)
                 })
             );
           }
