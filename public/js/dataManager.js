@@ -35,13 +35,14 @@ define(["md5baseJS"], function(md5) {
     var getPiece = function(pieceID, callback) {
         if(inMemoryData[pieceID]) {
             setTimeout(function() {
-                callback(inMemoryData[pieceID]);
+                callback(pieceID, inMemoryData[pieceID]);
             }, 0);
         } else if (localData[pieceID]) {
             console.log(localData[pieceID].range);
             getLocalPiece(pieceID, localData[pieceID].fileHandle, localData[pieceID].range, callback);
         } else {
-            console.log("error piece missing");
+            callback();
+            console.log("piece missing");
         }
     };
 

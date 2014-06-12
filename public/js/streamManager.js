@@ -4,7 +4,7 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
         streamers,
         remoteCatalogue = {},
         queue = [],
-        videoPieceQueue : [],
+        videoPieceQueue = [],
         actions = [
             {type : "getCatalogue", response : "sendCatalogue" },
             {type : "recieveCatalogue", response : "storeCatalogue"},
@@ -135,6 +135,20 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
 
     };
 
+    var getVideoData = function(callback) {
+        var nextPiece = videoPieceQueue[0];
+        console.log(videoPieceQueue);
+        DataManager.getPiece(nextPiece, function(pieceID, piece) {
+            if(pieceID && videoPieceQueue.length > 0) {
+                videoPieceQueue.shift();
+                callback(pieceID, piece);
+            } else if(!pieceID && videoPieceQueue.length === 0) {
+                callback("finished");
+            } else {
+                callback();
+            }
+        });
+    };
 
     var init = function() {
 
@@ -150,7 +164,7 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
         cacheStreamFile : DataManager.cacheStreamFile,
         cachePiece : DataManager.cachePiece,
         getVideo : getVideo,
-        getVideoData : DataManager.getVideoData,
+        getVideoData : getVideoData,
         loadLocalFile : DataManager.loadLocalFile,
     }
 });

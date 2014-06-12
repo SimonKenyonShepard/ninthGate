@@ -5,6 +5,16 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
       alert('MediaSource API is not available');
     }
 
+    var dataURItoBlob = function(dataURI) {
+        var binary = atob(dataURI);
+        var array = [];
+        for(var i = 0; i < binary.length; i++) {
+            array.push(binary.charCodeAt(i));
+        }
+        //return new Blob([new Uint8Array(array)], {type: 'video/webm'});
+        return new Uint8Array(array);
+    };
+
     var StreamApp = React.createClass({
 
         _initialState : {
@@ -26,17 +36,26 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
 
         tick: function() {
             var newCatalogue = streamer.getStoredCatalogues();
+            var that = this;
             if(this.state.catalogue.length !== newCatalogue.length) {
                 this.setState({catalogue: streamer.getStoredCatalogues()});
             }
-            if(this.state.stage.action === "downloading") {
-                var videoData = streamer.getVideoData();
-                if(videoData === true) {
-                    this._initialState.stage.videoAction = "loaded";
-                    this.setState({stage : this._initialState.stage});
-                } else if (videoData !== false) {
-                    sourceBuffer.appendBuffer(new Uint8Array(videoData));
+            if(this._initialState.stage.videoAction === "downloading") {
+                if(this._initialState.stage.sourceBuffer === "") {
+                    this._initialState.stage.sourceBuffer = this._initialState.stage.videoData.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
                 }
+                streamer.getVideoData(function(pieceID, piece) {
+                    if(pieceID === "finished") {
+                        console.log("end of stream called");
+                        that._initialState.stage.videoData.endOfStream();
+                        that._initialState.stage.videoAction = "loaded";
+                    } else if (pieceID !== undefined) {
+                        console.log("appending", pieceID, dataURItoBlob(piece).length);
+                        //console.log(atob(piece));
+                        console.log(that._initialState.stage.sourceBuffer);
+                        that._initialState.stage.sourceBuffer.appendBuffer(dataURItoBlob(piece));
+                    }
+                });
             }
         },
 
@@ -58,7 +77,7 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
             streamer.getVideo(item);
             this._initialState.stage.visible = "show";
             this._initialState.stage.videoAction = "downloading";
-            this._initialState.stage.sourceBuffer = this._initialState.stage.videoData.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+            console.log("appending source buffer");
             this.setState({stage : this._initialState.stage});
 
 

@@ -1,8 +1,9 @@
 define([], function() {
 
     var videoPlayer = React.createClass({
+
         render: function() {
-            var ms = new MediaSource();
+            console.log("render video");
             return (
                 React.DOM.video({
                     className: 'streamPlayer',
