@@ -45,9 +45,9 @@ app.get("/1", function(req, res, next) {
 
 });
 
-app.listen(2000);
+app.listen(process.env.PORT || 2000);
 
-
+/*
 var PeerServer = require('peer').PeerServer;
 var server = new PeerServer({port: 9000, path: '/myapp'});
 
@@ -62,3 +62,4 @@ server.on('disconnect', function(id) {
 	delete peerList[id];
 
 });
+*/
