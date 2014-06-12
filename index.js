@@ -14,13 +14,6 @@ app.on("render:index", function(encoding, req, res) {
 	});	
 });
 
-app.on("render:index1", function(encoding, req, res) {
-	fs.readFile(__dirname+"/views/index1.html", encoding, function(err, html) {
-		res.contentType("text/html");
-		res.send(200, html);
-	});	
-});
-
 app.on("render:getStreamers", function(encoding, req, res) {
 	var streamers = JSON.stringify(peerList);
 	res.contentType("application/json");
@@ -36,12 +29,6 @@ app.get("/streamers", function(req, res, next) {
 app.get("/", function(req, res, next) {
 
 	app.emit("render:index", "UTF-8", req, res);
-
-});
-
-app.get("/1", function(req, res, next) {
-
-	app.emit("render:index1", "UTF-8", req, res);
 
 });
 
