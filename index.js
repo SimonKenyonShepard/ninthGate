@@ -31,8 +31,8 @@ app.get("/", function(req, res, next) {
 	app.emit("render:index", "UTF-8", req, res);
 
 });
-
-app.listen(process.env.PORT || 2000);
+console.log(process.env.PORT);
+app.listen(process.env.PORT);
 
 /*
 var PeerServer = require('peer').PeerServer;
