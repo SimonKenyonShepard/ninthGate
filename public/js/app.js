@@ -24,6 +24,7 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
                 },
                 stage : {
                     visible : "hidden",
+                    seriesName : "",
                     sourceBuffer : "",
                     videoData : new MediaSource(),
                     action : ""
@@ -75,6 +76,7 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
                 "episode" : show[2].trim()
             };
             streamer.getVideo(item);
+            this._initialState.stage.seriesName = show[0].trim();
             this._initialState.stage.visible = "show";
             this._initialState.stage.videoAction = "downloading";
             console.log("appending source buffer");

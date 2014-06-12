@@ -137,7 +137,6 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
 
     var getVideoData = function(callback) {
         var nextPiece = videoPieceQueue[0];
-        console.log(videoPieceQueue);
         DataManager.getPiece(nextPiece, function(pieceID, piece) {
             if(pieceID && videoPieceQueue.length > 0) {
                 videoPieceQueue.shift();

@@ -24,6 +24,11 @@ define(["md5baseJS"], function(md5) {
             };    
         } else {
             inMemoryData[hash] = piece;
+            var pieceKeys = Object.keys(inMemoryData);
+            var cacheMemoryLimit = 100;
+            if(pieceKeys.length > cacheMemoryLimit) {
+                delete  inMemoryData[pieceKeys[0]];  
+            }
         }
         
     };
@@ -51,7 +56,6 @@ define(["md5baseJS"], function(md5) {
         var blob = fileHandle.slice(range.start, range.stop);
         reader.onload = function(e) {
             var data = e.target.result.substring(13);
-            console.log(pieceID);
             callback(pieceID, data);
         };
         reader.readAsDataURL(blob);

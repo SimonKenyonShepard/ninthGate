@@ -18,7 +18,7 @@ define([], function() {
         
         render: function() {
             
-            var stageTitle = React.DOM.h4({}," Series name");
+            var stageTitle = React.DOM.h4({},this.props.seriesName);
             var stage = React.DOM.div({
                   className : "row streamStage " + this.props.visible
                 }, [stageTitle, videoPlayer(this.props)]);
