@@ -4,7 +4,7 @@ var express = require('express'),
 
 var app = express(),
 	peerList = {};
-
+/*
 app.use(express.static(process.cwd() + '/public'));
 
 app.on("render:index", function(encoding, req, res) {
@@ -34,7 +34,7 @@ app.get("/", function(req, res, next) {
 console.log(process.env.PORT);
 app.listen(process.env.PORT);
 
-/*
+
 var PeerServer = require('peer').PeerServer;
 var server = new PeerServer({port: 9000, path: '/myapp'});
 
