@@ -3,9 +3,10 @@ var express = require('express'),
 	md5 = require('MD5');
 
 var app = express(),
-	peerList = {};
+	peerList = {},
+	webPort = process.env.PORT || 2000;
 
-console.log("helllo");
+console.log(webPort);
 app.use(express.static(process.cwd() + '/public'));
 
 app.on("render:index", function(encoding, req, res) {
@@ -33,11 +34,11 @@ app.get("/", function(req, res, next) {
 
 });
 
-app.listen(process.env.PORT || 2000);
+app.listen(webPort);
 
 /*
 var PeerServer = require('peer').PeerServer;
-var server = new PeerServer({port: 9000, path: '/myapp'});
+var server = new PeerServer({port: port, path: '/myapp'});
 
 server.on('connection', function(id) {
 	

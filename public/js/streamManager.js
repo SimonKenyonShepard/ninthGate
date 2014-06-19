@@ -53,7 +53,7 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
 
     var connectToSignallingHost = function() {
 
-        var peer = new Peer("", {host: '192.168.178.43', port: 9000, path: '/myapp'});
+        var peer = new Peer("", {host: '192.168.178.43', port: 2000, path: '/myapp'});
         
         peer.on('connection', function(conn) {
             conn.on('data', function(data){
