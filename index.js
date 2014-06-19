@@ -4,7 +4,8 @@ var express = require('express'),
 
 var app = express(),
 	peerList = {};
-/*
+
+console.log("helllo");
 app.use(express.static(process.cwd() + '/public'));
 
 app.on("render:index", function(encoding, req, res) {
@@ -31,10 +32,10 @@ app.get("/", function(req, res, next) {
 	app.emit("render:index", "UTF-8", req, res);
 
 });
-console.log(process.env.PORT);
-app.listen(process.env.PORT);
 
+app.listen(process.env.PORT || 2000);
 
+/*
 var PeerServer = require('peer').PeerServer;
 var server = new PeerServer({port: 9000, path: '/myapp'});
 
