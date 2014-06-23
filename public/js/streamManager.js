@@ -1,7 +1,7 @@
 define(["md5baseJS", "dataManager"], function(md5, DataManager) {
 
     var peer,
-        streamers,
+        streamers = {},
         remoteCatalogue = {},
         queue = [],
         videoPieceQueue = [],
@@ -9,7 +9,10 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
             {type : "getCatalogue", response : "sendCatalogue" },
             {type : "recieveCatalogue", response : "storeCatalogue"},
             {type : "sendStreamPiece", response : "requestStreamPiece"},
-            {type : "recieveStreamPiece", response : "cacheStreamPiece" }
+            {type : "recieveStreamPiece", response : "cacheStreamPiece" },
+            {type : "getStreamers", response : "sendStreamers" },
+            {type : "recieveStreamers", response : "cacheStreamers" },
+            
         ],
         responses = {
             sendCatalogue : function(streamer, data) {
@@ -31,7 +34,19 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
             },
             cacheStreamPiece : function(streamer, data) {
                 DataManager.cachePiecesInMemory(data.pieces);
+            },
+            sendStreamers : function(streamer, data) {
+                makeRequest(streamer, {type : "5", payload : streamers});
+                streamers[streamer] = Date.now();
+                makeRequest(streamer, {type : 0});
+                updateStreamers();
+
+            },
+            cacheStreamers : function(streamer, data) {
+                for (var streamer in data.payload) { streamers[streamer] = data.payload[streamer]; }
+                getRemoteCataloges();
             }
+
         };
 
     var processQueue = function() {
@@ -53,7 +68,7 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
 
     var connectToSignallingHost = function() {
 
-        var peer = new Peer("", {host: '192.168.178.43', port: 2000, path: '/myapp'});
+        var peer = new Peer("", {host: '192.168.178.43', port: 9000, path: '/myapp'});
         
         peer.on('connection', function(conn) {
             conn.on('data', function(data){
@@ -68,15 +83,22 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
 
     var getRemoteCataloges = function() {
         for(var streamer in streamers) {
-            makeRequest(streamer, {type : 0});
+            if(streamer != peer.id) {
+                makeRequest(streamer, {type : 0});    
+            }
         }
     };
 
-    var getStreamers = function(callback) {
-        $.getJSON("/streamers", function(data) {
-            streamers = data;
-            callback(data);
-        });
+    var updateStreamers = function() {
+        for(var streamer in streamers) {
+            if(streamer != peer.id) {
+                makeRequest(streamer, {type : "5", payload : streamers});
+            }
+        }
+    };
+
+    var getStreamers = function(callback, group) {
+        makeRequest(group, {type : 4});
     };
 
     var makeRequest = function(streamer, action) {
@@ -149,11 +171,28 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
         });
     };
 
+    var getStreamerCount = function() {
+        return Object.keys(streamers).length;
+    };
+
+    var getMediaCount = function() {
+        return Object.keys(remoteCatalogue).length;
+    };
+
     var init = function() {
 
+        var hash = window.location.hash;
+        var group = hash.split("=")[1];
         peer = connectToSignallingHost();
-        getStreamers(getRemoteCataloges);
-
+        if(!group) {
+            setTimeout(function() {
+                window.location.hash = "?group="+peer.id;
+                streamers[peer.id] = Date.now();
+            }, 100);
+        } else {
+            getStreamers(getRemoteCataloges, group);    
+        }
+        
     };
 
     init();
@@ -165,6 +204,8 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
         getVideo : getVideo,
         getVideoData : getVideoData,
         loadLocalFile : DataManager.loadLocalFile,
+        getStreamerCount : getStreamerCount,
+        getMediaCount : getMediaCount
     }
 });
 

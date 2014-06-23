@@ -6,7 +6,7 @@ define([], function() {
                     className: 'row header',
                     children : [
                         React.DOM.div({className : "col-md-3",
-                                        children : React.DOM.h1({}, 'StreamTime')
+                                        children : React.DOM.h1({}, 'ninthGate')
                                     }),
                         React.DOM.div({className : "col-md-9 mainSearch",
                                         children : React.DOM.input({

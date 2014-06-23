@@ -116,8 +116,8 @@ define(["md5baseJS"], function(md5) {
             
             var title = React.DOM.h4({}, "current:");
 
-            var streamersOnlineInfo = React.DOM.h5({}, "streamers online: 500");
-            var videoSharedInfo = React.DOM.h5({}, "media shared: 1500");
+            var streamersOnlineInfo = React.DOM.h5({}, "streamers online: "+this.props.streamersCount);
+            var videoSharedInfo = React.DOM.h5({}, "media shared: "+this.props.mediaCount);
             
             var uploadWidget = uploader(this.props);
 

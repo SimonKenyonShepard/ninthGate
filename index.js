@@ -4,7 +4,8 @@ var express = require('express'),
 
 var app = express(),
 	peerList = {},
-	webPort = process.env.PORT || 2000;
+	webPort = process.env.PORT || 2000,
+	peerPort = 9000;
 
 console.log(webPort);
 app.use(express.static(process.cwd() + '/public'));
@@ -36,9 +37,9 @@ app.get("/", function(req, res, next) {
 
 app.listen(webPort);
 
-/*
+
 var PeerServer = require('peer').PeerServer;
-var server = new PeerServer({port: port, path: '/myapp'});
+var server = new PeerServer({port: peerPort, path: '/myapp'});
 
 server.on('connection', function(id) {
 	
@@ -51,4 +52,3 @@ server.on('disconnect', function(id) {
 	delete peerList[id];
 
 });
-*/

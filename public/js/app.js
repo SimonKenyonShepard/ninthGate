@@ -19,16 +19,18 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
 
         _initialState : {
             catalogue : [],
-                uploader : {
-                    loadLocalFile : streamer.loadLocalFile
-                },
-                stage : {
-                    visible : "hidden",
-                    seriesName : "",
-                    sourceBuffer : "",
-                    videoData : new MediaSource(),
-                    action : ""
-                }
+            streamersCount : 0,
+            mediaCount : 0,
+            uploader : {
+                loadLocalFile : streamer.loadLocalFile
+            },
+            stage : {
+                visible : "hidden",
+                seriesName : "",
+                sourceBuffer : "",
+                videoData : new MediaSource(),
+                action : ""
+            }
         },
 
         getInitialState : function() {
@@ -40,6 +42,14 @@ require(["streamManager", "streamHeader", "streamUploader", "streamGrid", "strea
             var that = this;
             if(this.state.catalogue.length !== newCatalogue.length) {
                 this.setState({catalogue: streamer.getStoredCatalogues()});
+            }
+            var streamersCount = streamer.getStreamerCount();
+            if(this.state.streamersCount !== streamersCount) {
+                this.setState({streamersCount : streamersCount});
+            }
+            var mediaCount = streamer.getMediaCount();
+            if(this.state.mediaCount !== mediaCount) {
+                this.setState({mediaCount : mediaCount});
             }
             if(this._initialState.stage.videoAction === "downloading") {
                 if(this._initialState.stage.sourceBuffer === "") {
