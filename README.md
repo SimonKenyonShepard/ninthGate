@@ -6,7 +6,7 @@ NinthGate
 ### Usage
 
 
-sign up to Heroku for free
+sign up to Heroku for free (https://id.heroku.com/signup)
 
 ```bash
 $ git clone https://github.com/SimonKenyonShepard/ninthGate.git
