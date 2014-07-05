@@ -3,3 +3,6 @@ console.log("server not create yet");
 var PeerServer = require('peer').PeerServer;
 var server = new PeerServer({port: peerPort, path: '/myapp'});
 console.log("server created");
+setInterval(function() {
+	console.log(server);
+}, 1000);
