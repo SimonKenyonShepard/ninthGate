@@ -68,7 +68,7 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
 
     var connectToSignallingHost = function() {
 
-        var peer = new Peer("", {host: '192.168.178.43', port: 9000, path: '/myapp'});
+        var peer = new Peer("", {host: 'aqueous-refuge-7092.herokuapp.com', secure:true, port:443, path: '/'});
         
         peer.on('connection', function(conn) {
             conn.on('data', function(data){
