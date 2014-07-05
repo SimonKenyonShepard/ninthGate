@@ -33,3 +33,7 @@ $ #!/bin/sh
 $ git push -f origin master:gh-pages
 $ git checkout gh-pages
 $ 
+
+Remember to change the permissions of the bash script.
+
+$chmod +x .git/hooks/post-commit
