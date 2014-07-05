@@ -1,9 +1,9 @@
 NinthGate
 ==========
 
-# Starting your own peer server on Heroku
+## Starting your own peer server on Heroku
 
-## Usage
+### Usage
 
 
 sign up to Heroku for free
