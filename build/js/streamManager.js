@@ -191,7 +191,7 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
         var hash = window.location.hash;
         var group = hash.split("=")[1];
         peer = connectToSignallingHost(function(id) {
-            console.log("test1234567");
+            console.log("test12345678");
             if(!group) {
                 window.location.hash = "?group="+id;
                 streamers[id] = Date.now();
