@@ -66,10 +66,17 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
 
     };
 
-    var connectToSignallingHost = function() {
+    var connectToSignallingHost = function(callback) {
 
         var peer = new Peer("", {host: 'aqueous-refuge-7092.herokuapp.com', secure:true, port:443, path: '/'});
         
+        peer.on("open", function(id) {
+            console.log("helel", id);
+            if(callback) {
+                callback(id);
+            }
+        });
+
         peer.on('connection', function(conn) {
             conn.on('data', function(data){
                 console.log("receive reqest", data, conn);
@@ -183,15 +190,14 @@ define(["md5baseJS", "dataManager"], function(md5, DataManager) {
 
         var hash = window.location.hash;
         var group = hash.split("=")[1];
-        peer = connectToSignallingHost();
-        if(!group) {
-            setTimeout(function() {
-                window.location.hash = "?group="+peer.id;
-                streamers[peer.id] = Date.now();
-            }, 100);
-        } else {
-            getStreamers(getRemoteCataloges, group);    
-        }
+        peer = connectToSignallingHost(function(id) {
+            if(!group) {
+                window.location.hash = "?group="+id;
+                streamers[id] = Date.now();
+            } else {
+                getStreamers(getRemoteCataloges, group);    
+            }
+        });
         
     };
 
