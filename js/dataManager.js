@@ -62,13 +62,11 @@ define(["md5baseJS"], function(md5) {
 
     };
 
-    var cacheStreamFile = function(hashes, series, seasonAndEpisode, fileHandle, reader) {
+    var cacheStreamFile = function(hashes, description, fileHandle, reader) {
 
-        var id = md5(series.trim()+seasonAndEpisode.split(":")[0].trim()+seasonAndEpisode.split(":")[1].trim());
+        var id = md5(description.trim());
         myCatalogue.push({
-            "name" : series.trim(),
-            "season" : seasonAndEpisode.split(":")[0].trim(),
-            "episode" : seasonAndEpisode.split(":")[1].trim(),
+            "name" : description.trim(),
             "lang" : "en",
             "pieces" : hashes,
             "id" : id               
@@ -95,7 +93,7 @@ define(["md5baseJS"], function(md5) {
                 hashes.push(hashedID);
                 cachePiece(hashedID, data, range, fileHandle);
             if(i === numberOfPieces) {
-                cacheStreamFile(hashes, $("#series").val(), $("#episode").val(), fileHandle, reader);
+                cacheStreamFile(hashes, $("#description").val(), fileHandle, reader);
                 callBack("success");
             } else {
                 range = loadNextPiece(i, pieceSizeInB, reader, fileHandle);

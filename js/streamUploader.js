@@ -32,8 +32,6 @@ define(["md5baseJS"], function(md5) {
           }
     });
 
-    var episodes = [{number : "Season 1 : Episode 1"}, {number : "Season 1 : Episode 2"}, {number : "Season 1 : Episode 3"}, {number : "Season 1 : Episode 4"}];
-
     var formSelect = React.createClass({
         render: function() {
 
@@ -80,8 +78,7 @@ define(["md5baseJS"], function(md5) {
      var uploadForm = React.createClass({
         render: function() {
 
-            var seriesName = formGroup({name : "series", type : "text", placeholder : "Enter series name"});
-            var episode = formGroup({name : "episode", type : "select"});
+            var seriesName = formGroup({name : "description", type : "text", placeholder : "Enter description"});
             var fileLocation = formGroup({name : "stream-file", type : "file"});
             var uploadButtonControl = uploadButton(this.props);
             var clearFix = React.DOM.div({className : "clearfix"});
@@ -90,7 +87,7 @@ define(["md5baseJS"], function(md5) {
                 React.DOM.form({
                     role : "form",
                     onSubmit : function() {return false;},
-                    children : [seriesName, episode, fileLocation, uploadButtonControl, clearFix]
+                    children : [seriesName, fileLocation, uploadButtonControl, clearFix]
                 })
             );
           }
